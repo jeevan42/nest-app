@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common'; // 📦 Importing decorators for HTTP methods and request handling
+import { Body, Req, Controller, Get, Post, UseGuards } from '@nestjs/common'; // 📦 Importing decorators for HTTP methods and request handling
 import { AuthService } from './auth.service'; // 🔁 Bringing in the AuthService that holds all the logic
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGaurd } from './jwt-auth.guard';
 // 📄 DTOs used for input validation and type safety
 
 @Controller('auth')
@@ -22,5 +23,12 @@ export class AuthController {
     @Post('login')  // 🔁 POST /auth/login
     login(@Body() dto: LoginDto) {
         return this.authService.login(dto)         // 🔐 Delegates logic to service → validates credentials & returns JWT
+    }
+
+    @UseGuards(JwtAuthGaurd)
+    @Get('profile')
+    getprofile(@Req() req: any) {
+        // req.user comes from JwtStrategy's validate()
+        return req.user;
     }
 }
